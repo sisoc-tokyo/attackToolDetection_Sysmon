@@ -19,12 +19,17 @@ public class SysmonDetecter {
 	 /**
 	 * Specify file name of mimikatz
 	 */
-	private static final String MIMIKATZ_MODULE_NAME = "caidao.exe";
+	private static final String ATTACK_MODULE_NAME = "powershell.exe";
+	//private static final String ATTACK_MODULE_NAME = "caidao.exe";
+	//private static final String ATTACK_MODULE_NAME = "wce.exe";
+	//private static final String ATTACK_MODULE_NAME = "pwdump";
+	private static final String MIMI_MODULE_NAME = "mimikatz.exe";
 	private static Map<Integer, HashSet> log;
 	private static Map<Integer, HashSet> image;
 	private static HashSet<String> commonDLLlist = new HashSet<String>();
 	private static String commonDLLlistFileName = null;
 	private static String outputDirName = null;
+	private static int TruePositiveCnt = 0;
 	private static int falsePositiveCnt = 0;
 	private static int falseNegativeCnt = 0;
 	
@@ -51,6 +56,10 @@ public class SysmonDetecter {
 						processId = Integer.parseInt(parseElement(elem,": "));
 					} else if (elem.startsWith("Image:")) {
 						image=parseElement(elem,": ");
+						image=image.toLowerCase();
+					}
+					if(image.endsWith(MIMI_MODULE_NAME)) {
+						continue;
 					}
 					if (elem.startsWith("ImageLoaded:") && elem.endsWith("dll")) {
 						imageLoaded = parseElement(elem,": ");
@@ -102,6 +111,10 @@ public class SysmonDetecter {
 				HashSet<EventLogData> evS = (HashSet<EventLogData>) entry.getValue();
 				HashSet<String> imageLoadedList = new HashSet<String>();
 				for (EventLogData ev: evS) {
+					String image=ev.getImage();
+					if (image.endsWith(MIMI_MODULE_NAME)) {
+						break;
+					}
 					String[] dlls=ev.getImageLoaded().split("\\\\");
 					String dllName=dlls[dlls.length-1];
 					imageLoadedList.add(dllName);
@@ -115,13 +128,13 @@ public class SysmonDetecter {
 				HashSet<String> imageList=new HashSet<String>();
 				for (EventLogData ev : evSet) {
 					String image=ev.getImage();
-					if (image.endsWith(MIMIKATZ_MODULE_NAME)) {
+					if (image.contains(ATTACK_MODULE_NAME)) {
 						// mimikatz is executed
 						containsMimikatz = true;
 						imageList.add(image);
 						processCntMimi++;
 						break;
-					}
+					} 
 				}
 				// Matched with Common DLL List 
 				if (result) {
@@ -130,6 +143,8 @@ public class SysmonDetecter {
 					if (!containsMimikatz) {
 						// mimikatz is not executed
 						falsePositiveCnt++;
+					} else {
+						TruePositiveCnt++;
 					}
 				} else {
 					// Do not matched with Common DLL List 
@@ -138,7 +153,7 @@ public class SysmonDetecter {
 						/*
 						boolean mimiProcessExists=false;
 						for(String image : imageList){
-							if(image.endsWith(MIMIKATZ_MODULE_NAME)){
+							if(image.endsWith(ATTACK_MODULE_NAME)){
 								mimiProcessExists=true;
 								break;
 							}
@@ -204,7 +219,7 @@ public class SysmonDetecter {
 		// mimikatz以外と判定したプロセスの割合
 		double trueNegativeRate = (double) (totalProcessCnt-this.detectedProcessCntMimi) / (double)normalProcessCnt;
 		// 正しくmimikatzと判定したプロセスの割合
-		double truePositiveRate = (double) this.detectedProcessCntMimi / (double)processCntMimi;
+		double truePositiveRate = (double) TruePositiveCnt / (double)processCntMimi;
 		
 		// mimikatz以外のプロセスをmimikatzと検知した割合
 		double falsePositiveRate = (double) falsePositiveCnt / totalProcessCnt;
@@ -219,7 +234,7 @@ public class SysmonDetecter {
 			bw = new BufferedWriter(filewriter);
 			pw = new PrintWriter(bw);
 			pw.println("Total process count: " + totalProcessCnt);
-			pw.println("True Positive count: " + this.detectedProcessCntMimi + ", True Positive rate: " + truePositiveRateS);
+			pw.println("True Positive count: " + TruePositiveCnt + ", True Positive rate: " + truePositiveRateS);
 			pw.println("True Negative count: " + (totalProcessCnt-this.detectedProcessCntMimi) + ", True Negative rate: " + trueNegativeRateS);
 			pw.println("False Positive count: " + falsePositiveCnt + ", False Positive rate: " + falsePositiveRateS);
 			pw.println("False Negative count: " + falseNegativeCnt + ", False Negative rate: " + falseNegativeRateS);
@@ -234,7 +249,7 @@ public class SysmonDetecter {
 			}
 		}
 		System.out.println("Total process count: " + totalProcessCnt);
-		System.out.println("True Positive count: " + this.detectedProcessCntMimi + ", True Positive rate: " + truePositiveRateS);
+		System.out.println("True Positive count: " + TruePositiveCnt + ", True Positive rate: " + truePositiveRateS);
 		System.out.println("True Negative count: " + (totalProcessCnt-this.detectedProcessCntMimi) + ", True Negative rate: " + trueNegativeRateS);
 		System.out.println("False Positive count: " + falsePositiveCnt + ", False Positive rate: " + falsePositiveRateS);
 		System.out.println("False Negative count: " + falseNegativeCnt + ", False Negative rate: " + falseNegativeRateS);

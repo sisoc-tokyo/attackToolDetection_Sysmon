@@ -16,12 +16,12 @@ public class SysmonParser {
 	/**
 	 * Specify file name of mimikatz
 	 */
-	private static final String MODULE_1 = "powershell.exe";
-	//private static final String MODULE_1 = "HTran.exe";
-	private static final String MODULE_2 = "caidao.exe";
+	//private static final String MODULE_1 = "powershell.exe";
+	//private static final String MODULE_1 = "htran.exe";
+	//private static final String MODULE_2 = "caidao.exe";
 	//private static final String MODULE_1 = "mimikatz.exe";
-	private static final String MODULE_3 = "wce.exe";
-	//private static final String MODULE_2 ="PwDump7.exe";
+	private static final String MODULE_1 = "wce.exe";
+	//private static final String MODULE_1 ="pwdump";
 	private static Map<Integer, HashSet<String>> log;
 	private HashSet<String> imageLoadedList;
 
@@ -43,10 +43,11 @@ public class SysmonParser {
 					} else if (elem.startsWith("Image:")) {
 						// Get process name
 						image = parseElement(elem);
+						image=image.toLowerCase();
 					} else if (elem.startsWith("ImageLoaded:") && elem.endsWith("dll")) {
 						// Get Dll name
 						String imageLoaded = parseElement(elem);
-						if (image.contains(MODULE_1)||image.contains(MODULE_2)||image.contains(MODULE_3)) {
+						if (image.contains(MODULE_1)) {
 							if (null == log.get(processId)) {
 								imageLoadedList = new HashSet<String>();
 							} else {

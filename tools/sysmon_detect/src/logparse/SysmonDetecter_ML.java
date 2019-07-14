@@ -19,9 +19,11 @@ public class SysmonDetecter_ML {
 	 /**
 	 * Specify file name of mimikatz
 	 */
-	//private static final String MIMIKATZ_MODULE_NAME = "HTran.exe";
-	//private static final String MIMIKATZ_MODULE_NAME = "mimikatz.exe";
-	private static final String MIMIKATZ_MODULE_NAME = "caidao.exe";
+	//private static final String ATTACK_MODULE_NAME = "HTran.exe";
+	//private static final String ATTACK_MODULE_NAME = "mimikatz.exe";
+	//private static final String ATTACK_MODULE_NAME = "caidao.exe";
+	private static final String ATTACK_MODULE_NAME = "wce.exe";
+	private static final String MIMI_MODULE_NAME = "mimikatz.exe";
 	
 	private static Map<Integer, LinkedHashSet> log;
 	private static Map<Integer, LinkedHashSet> image;
@@ -57,6 +59,7 @@ public class SysmonDetecter_ML {
 						processId = Integer.parseInt(parseElement(elem,": "));
 					} else if (elem.startsWith("Image:")) {
 						image=parseElement(elem,": ");
+						image=image.toLowerCase();
 					}
 					if (elem.startsWith("ImageLoaded:") && elem.endsWith("dll")) {
 						imageLoaded = parseElement(elem,": ");
@@ -135,7 +138,7 @@ public class SysmonDetecter_ML {
 				String image="";
 				for (EventLogData ev : evSet) {
 					image=ev.getImage();
-					if (image.endsWith(MIMIKATZ_MODULE_NAME)) {
+					if (image.endsWith(ATTACK_MODULE_NAME)) {
 						// mimikatz is executed
 						containsMimikatz = true;
 						imageList.add(image);
@@ -159,7 +162,7 @@ public class SysmonDetecter_ML {
 						/*
 						boolean mimiProcessExists=false;
 						for(String image : imageList){
-							if(image.endsWith(MIMIKATZ_MODULE_NAME)){
+							if(image.endsWith(ATTACK_MODULE_NAME)){
 								mimiProcessExists=true;
 								break;
 							}
@@ -201,8 +204,9 @@ public class SysmonDetecter_ML {
 				LinkedHashSet<String> imageLoadedList = new LinkedHashSet<String>();
 				
 				for (EventLogData ev: evS) {
-					imageLoadedList.add(ev.getImageLoaded());
-					
+					String[] dlls=ev.getImageLoaded().split("\\\\");
+					String dllName=dlls[dlls.length-1];
+					imageLoadedList.add(dllName);
 				}
 				List<String> list = new ArrayList<String>();
 				for (EventLogData ev: evS) {
@@ -220,7 +224,7 @@ public class SysmonDetecter_ML {
 				String image="";
 				for (EventLogData ev : evSet) {
 					image=ev.getImage();
-					if (image.endsWith(MIMIKATZ_MODULE_NAME)) {
+					if (image.endsWith(ATTACK_MODULE_NAME)) {
 						// mimikatz is executed
 						containsMimikatz = true;
 						imageList.add(image);
@@ -249,7 +253,7 @@ public class SysmonDetecter_ML {
 						/*
 						boolean mimiProcessExists=false;
 						for(String image : imageList){
-							if(image.endsWith(MIMIKATZ_MODULE_NAME)){
+							if(image.endsWith(ATTACK_MODULE_NAME)){
 								mimiProcessExists=true;
 								break;
 							}
