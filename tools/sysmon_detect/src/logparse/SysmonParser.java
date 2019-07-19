@@ -16,11 +16,11 @@ public class SysmonParser {
 	/**
 	 * Specify file name of mimikatz
 	 */
-	//private static final String MODULE_1 = "powershell.exe";
+	private static final String MODULE_1 = "powershell.exe";
 	//private static final String MODULE_1 = "htran.exe";
 	//private static final String MODULE_2 = "caidao.exe";
 	//private static final String MODULE_1 = "mimikatz.exe";
-	private static final String MODULE_1 = "wce.exe";
+	//private static final String MODULE_1 = "wce.exe";
 	//private static final String MODULE_1 ="pwdump";
 	private static Map<Integer, HashSet<String>> log;
 	private HashSet<String> imageLoadedList;

@@ -23,7 +23,8 @@ public class SysmonDetecter {
 	//private static final String ATTACK_MODULE_NAME = "caidao.exe";
 	//private static final String ATTACK_MODULE_NAME = "wce.exe";
 	//private static final String ATTACK_MODULE_NAME = "pwdump";
-	private static final String MIMI_MODULE_NAME = "mimikatz.exe";
+	//private static final String ATTACK_MODULE_NAME = "htran.exe";
+	private static final String MIMI_MODULE_NAME = "hogehoge.exe";
 	private static Map<Integer, HashSet> log;
 	private static Map<Integer, HashSet> image;
 	private static HashSet<String> commonDLLlist = new HashSet<String>();
