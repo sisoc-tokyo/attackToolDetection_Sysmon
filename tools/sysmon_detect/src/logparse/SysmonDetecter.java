@@ -51,18 +51,18 @@ public class SysmonDetecter {
 			while ((line = br.readLine()) != null) {
 				String[] data = line.split(",", 0);
 				for (String elem : data) {
-					if (elem.startsWith("情報") || elem.startsWith("Information")) {
+					if (elem.startsWith("情報") || elem.startsWith("Information,7")) {
 						  date = data[1];
 					} else if (elem.startsWith("ProcessId:")) {
 						processId = Integer.parseInt(parseElement(elem,": "));
-					} else if (elem.startsWith("Image:")) {
+					} else if (elem.startsWith("Image:")|| elem.endsWith(".exe")) {
 						image=parseElement(elem,": ");
 						image=image.toLowerCase();
 					}
 					if(image.endsWith(MIMI_MODULE_NAME)) {
 						continue;
 					}
-					if (elem.startsWith("ImageLoaded:") && elem.endsWith("dll")) {
+					if (elem.startsWith("ImageLoaded:") || elem.endsWith(".dll")) {
 						imageLoaded = parseElement(elem,": ");
 						HashSet<EventLogData> evSet;
 						if (null == log.get(processId)) {
@@ -89,7 +89,7 @@ public class SysmonDetecter {
 		String value="";
 		try{
 		String elems[] = elem.split(delimiter);
-		value = elems[1].trim();
+		value = elems[elems.length-1].trim();
 		}catch (RuntimeException e){
 			e.printStackTrace();
 		}
@@ -111,7 +111,8 @@ public class SysmonDetecter {
 				Map.Entry<Integer, HashSet> entry = (Map.Entry<Integer, HashSet>) it.next();
 				Object processId = entry.getKey();
 				HashSet<EventLogData> evS = (HashSet<EventLogData>) entry.getValue();
-				HashSet<String> imageLoadedList = new HashSet<String>();
+				//HashSet<String> imageLoadedList = new HashSet<String>();
+				TreeSet<String> imageLoadedList = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
 				for (EventLogData ev: evS) {
 					String image=ev.getImage();
 					if (image.endsWith(MIMI_MODULE_NAME)) {
@@ -180,9 +181,19 @@ public class SysmonDetecter {
 		}
 	}
 
-	private boolean isMatchWithCommonDLLlist(String commonDLLlistFileName, HashSet<String> imageLoadedList) {
-		boolean result = imageLoadedList.containsAll(commonDLLlist);
-		return result;
+	/*
+	 * private boolean isMatchWithCommonDLLlist(String
+	 * commonDLLlistFileName,TreeSet<String> imageLoadedList) { boolean result =
+	 * imageLoadedList.containsAll(commonDLLlist); return result; }
+	 */
+	
+	private boolean isMatchWithCommonDLLlist(String commonDLLlistFileName,TreeSet<String> imageLoadedList) {
+		for(String dll:commonDLLlist) {
+			if(!imageLoadedList.contains(dll)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
