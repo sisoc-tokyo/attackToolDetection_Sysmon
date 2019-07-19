@@ -19,11 +19,12 @@ public class SysmonDetecter_ML {
 	 /**
 	 * Specify file name of mimikatz
 	 */
+	private static final String ATTACK_MODULE_NAME = "powershell.exe";
 	//private static final String ATTACK_MODULE_NAME = "HTran.exe";
 	//private static final String ATTACK_MODULE_NAME = "mimikatz.exe";
 	//private static final String ATTACK_MODULE_NAME = "caidao.exe";
-	private static final String ATTACK_MODULE_NAME = "wce.exe";
-	private static final String MIMI_MODULE_NAME = "mimikatz.exe";
+	//private static final String ATTACK_MODULE_NAME = "wce.exe";
+	//private static final String MIMI_MODULE_NAME = "mimikatz.exe";
 	
 	private static Map<Integer, LinkedHashSet> log;
 	private static Map<Integer, LinkedHashSet> image;
@@ -53,15 +54,15 @@ public class SysmonDetecter_ML {
 			while ((line = br.readLine()) != null) {
 				String[] data = line.split(",", 0);
 				for (String elem : data) {
-					if (elem.startsWith("情報") || elem.startsWith("Information")) {
+					if (elem.startsWith("情報") || elem.startsWith("Information,7")) {
 						  date = data[1];
 					} else if (elem.startsWith("ProcessId:")) {
 						processId = Integer.parseInt(parseElement(elem,": "));
-					} else if (elem.startsWith("Image:")) {
+					} else if (elem.startsWith("Image:")|| elem.endsWith(".exe")) {
 						image=parseElement(elem,": ");
 						image=image.toLowerCase();
 					}
-					if (elem.startsWith("ImageLoaded:") && elem.endsWith("dll")) {
+					if (elem.startsWith("ImageLoaded:") || elem.endsWith(".dll")) {
 						imageLoaded = parseElement(elem,": ");
 						LinkedHashSet<EventLogData> evSet;
 						if (null == log.get(processId)) {
@@ -69,6 +70,7 @@ public class SysmonDetecter_ML {
 						} else {
 							evSet = log.get(processId);
 						}
+						imageLoaded=imageLoaded.toLowerCase();
 						evSet.add(new EventLogData(date,imageLoaded,image));
 						log.put(processId, evSet);
 					}
@@ -87,7 +89,7 @@ public class SysmonDetecter_ML {
 		String value="";
 		try{
 		String elems[] = elem.split(delimiter);
-		value = elems[1].trim();
+		value = elems[elems.length-1].trim();
 		}catch (RuntimeException e){
 			e.printStackTrace();
 		}
