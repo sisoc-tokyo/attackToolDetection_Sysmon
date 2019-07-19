@@ -55,6 +55,7 @@ public class SysmonParser {
 							}
 							String imageLoadeds[]=imageLoaded.split("\\\\");
 							imageLoaded=imageLoadeds[imageLoadeds.length-1];
+							imageLoaded=imageLoaded.toLowerCase();
 							imageLoadedList.add(imageLoaded);
 							log.put(processId, imageLoadedList);
 						}
@@ -242,8 +243,10 @@ public class SysmonParser {
 			if (null == union || union.size() == 0) {
 				union = dlls;
 			}
-			intersection = CollectionUtils.intersection(intersection, dlls);
-			union = CollectionUtils.union(union, dlls);
+			if(dlls.size()>0) {
+				intersection = CollectionUtils.intersection(intersection, dlls);
+				union = CollectionUtils.union(union, dlls);	
+			}
 		}
 		// Create Common DLL list
 		outputDlls(intersection, outputDirname + "/CommonDLLlist.csv");

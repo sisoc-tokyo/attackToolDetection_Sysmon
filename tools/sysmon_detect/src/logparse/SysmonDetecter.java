@@ -70,6 +70,7 @@ public class SysmonDetecter {
 						} else {
 							evSet = log.get(processId);
 						}
+						imageLoaded=imageLoaded.toLowerCase();
 						evSet.add(new EventLogData(date,imageLoaded,image));
 						log.put(processId, evSet);
 					}
@@ -118,6 +119,7 @@ public class SysmonDetecter {
 					}
 					String[] dlls=ev.getImageLoaded().split("\\\\");
 					String dllName=dlls[dlls.length-1];
+					dllName=dllName.toLowerCase();
 					imageLoadedList.add(dllName);
 				}
 				boolean result = isMatchWithCommonDLLlist(commonDLLlistFileName, imageLoadedList);
