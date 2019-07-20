@@ -19,11 +19,11 @@ public class SysmonDetecter {
 	 /**
 	 * Specify file name of mimikatz
 	 */
-	private static final String ATTACK_MODULE_NAME = "powershell.exe";
+	//private static final String ATTACK_MODULE_NAME = "powershell.exe";
 	//private static final String ATTACK_MODULE_NAME = "caidao.exe";
 	//private static final String ATTACK_MODULE_NAME = "wce.exe";
 	//private static final String ATTACK_MODULE_NAME = "pwdump";
-	//private static final String ATTACK_MODULE_NAME = "htran.exe";
+	private static final String ATTACK_MODULE_NAME = "htran.exe";
 	private static final String MIMI_MODULE_NAME = "caidao.exe";
 	private static Map<Integer, HashSet> log;
 	private static Map<Integer, HashSet> image;
@@ -62,7 +62,7 @@ public class SysmonDetecter {
 					if(image.endsWith(MIMI_MODULE_NAME)) {
 						continue;
 					}
-					if (elem.startsWith("ImageLoaded:") || elem.endsWith(".dll")) {
+					if (elem.startsWith("ImageLoaded:") && elem.endsWith(".dll") || elem.endsWith(".dll")) {
 						imageLoaded = parseElement(elem,": ");
 						HashSet<EventLogData> evSet;
 						if (null == log.get(processId)) {
