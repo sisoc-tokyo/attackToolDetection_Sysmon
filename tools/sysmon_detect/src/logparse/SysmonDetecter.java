@@ -19,13 +19,14 @@ public class SysmonDetecter {
 	 /**
 	 * Specify file name of mimikatz
 	 */
-	//private static final String ATTACK_MODULE_NAME = "powershell.exe";
+	//private static final String ATTACK_MODULE_NAME = "mimikatz.exe";
+	private static final String ATTACK_MODULE_NAME = "powershell.exe";
 	//private static final String ATTACK_MODULE_NAME = "caidao.exe";
 	//private static final String ATTACK_MODULE_NAME = "wce.exe";
 	//private static final String ATTACK_MODULE_NAME = "pwdump";
-	private static final String ATTACK_MODULE_NAME = "htran.exe";
-	private static final String MIMI_MODULE_NAME = "caidao.exe";
-	private static Map<Integer, HashSet> log;
+	//private static final String ATTACK_MODULE_NAME = "htran.exe";
+	private static final String MIMI_MODULE_NAME = "mimikatz.exe";
+	private static Map<String, HashSet> log;
 	private static Map<Integer, HashSet> image;
 	private static HashSet<String> commonDLLlist = new HashSet<String>();
 	private static String commonDLLlistFileName = null;
@@ -65,14 +66,14 @@ public class SysmonDetecter {
 					if (elem.startsWith("ImageLoaded:") && elem.endsWith(".dll") || elem.endsWith(".dll")) {
 						imageLoaded = parseElement(elem,": ");
 						HashSet<EventLogData> evSet;
-						if (null == log.get(processId)) {
+						if (null == log.get(processId+image)) {
 							evSet=new HashSet<EventLogData>();
 						} else {
-							evSet = log.get(processId);
+							evSet = log.get(processId+image);
 						}
 						imageLoaded=imageLoaded.toLowerCase();
 						evSet.add(new EventLogData(date,imageLoaded,image));
-						log.put(processId, evSet);
+						log.put(processId+image, evSet);
 					}
 
 				}
@@ -147,6 +148,7 @@ public class SysmonDetecter {
 					if (!containsMimikatz) {
 						// mimikatz is not executed
 						falsePositiveCnt++;
+						System.out.println("FP occurs. filename:"+filename+", Process ID:"+processId);
 					} else {
 						TruePositiveCnt++;
 					}
@@ -165,6 +167,7 @@ public class SysmonDetecter {
 						*/
 						//if(!mimiProcessExists){
 						falseNegativeCnt++;
+						System.out.println("FN occurs. filename:"+filename+", Process ID:"+processId);
 						//}
 					}
 				}
@@ -321,7 +324,7 @@ public class SysmonDetecter {
 		if (args.length > 2) {
 			outputDirName = args[2];
 		}
-		log = new HashMap<Integer, HashSet>();
+		log = new HashMap<String, HashSet>();
 		image = new HashMap<Integer, HashSet>();
 		sysmonParser.detelePrevFiles(outputDirName);
 		sysmonParser.readCommonDLLList();
