@@ -19,12 +19,12 @@ public class SysmonDetecter_ML {
 	 /**
 	 * Specify file name of mimikatz
 	 */
-	private static final String ATTACK_MODULE_NAME = "powershell.exe";
+	//private static final String ATTACK_MODULE_NAME = "powershell.exe";
 	//private static final String ATTACK_MODULE_NAME = "HTran.exe";
-	//private static final String ATTACK_MODULE_NAME = "mimikatz.exe";
+	private static final String ATTACK_MODULE_NAME = "mimikatz.exe";
 	//private static final String ATTACK_MODULE_NAME = "caidao.exe";
 	//private static final String ATTACK_MODULE_NAME = "wce.exe";
-	//private static final String MIMI_MODULE_NAME = "mimikatz.exe";
+	private static final String MIMI_MODULE_NAME = "hogehoge.exe";
 	
 	private static Map<Integer, LinkedHashSet> log;
 	private static Map<Integer, LinkedHashSet> image;

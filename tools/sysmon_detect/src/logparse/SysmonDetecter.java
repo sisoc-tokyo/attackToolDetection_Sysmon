@@ -20,11 +20,11 @@ public class SysmonDetecter {
 	 * Specify file name of mimikatz
 	 */
 	//private static final String ATTACK_MODULE_NAME = "mimikatz.exe";
-	private static final String ATTACK_MODULE_NAME = "powershell.exe";
+	//private static final String ATTACK_MODULE_NAME = "powershell.exe";
 	//private static final String ATTACK_MODULE_NAME = "caidao.exe";
 	//private static final String ATTACK_MODULE_NAME = "wce.exe";
 	//private static final String ATTACK_MODULE_NAME = "pwdump";
-	//private static final String ATTACK_MODULE_NAME = "htran.exe";
+	private static final String ATTACK_MODULE_NAME = "htran.exe";
 	private static final String MIMI_MODULE_NAME = "mimikatz.exe";
 	private static Map<String, HashSet> log;
 	private static Map<Integer, HashSet> image;
@@ -252,7 +252,7 @@ public class SysmonDetecter {
 			pw = new PrintWriter(bw);
 			pw.println("Total process count: " + totalProcessCnt);
 			pw.println("True Positive count: " + TruePositiveCnt + ", True Positive rate: " + truePositiveRateS);
-			pw.println("True Negative count: " + (totalProcessCnt-this.detectedProcessCntMimi) + ", True Negative rate: " + trueNegativeRateS);
+			pw.println("True Negative count: " + (totalProcessCnt-this.detectedProcessCntMimi-falseNegativeCnt) + ", True Negative rate: " + trueNegativeRateS);
 			pw.println("False Positive count: " + falsePositiveCnt + ", False Positive rate: " + falsePositiveRateS);
 			pw.println("False Negative count: " + falseNegativeCnt + ", False Negative rate: " + falseNegativeRateS);
 		} catch (IOException e) {
@@ -267,7 +267,7 @@ public class SysmonDetecter {
 		}
 		System.out.println("Total process count: " + totalProcessCnt);
 		System.out.println("True Positive count: " + TruePositiveCnt + ", True Positive rate: " + truePositiveRateS);
-		System.out.println("True Negative count: " + (totalProcessCnt-this.detectedProcessCntMimi) + ", True Negative rate: " + trueNegativeRateS);
+		System.out.println("True Negative count: " + (totalProcessCnt-this.detectedProcessCntMimi-falseNegativeCnt) + ", True Negative rate: " + trueNegativeRateS);
 		System.out.println("False Positive count: " + falsePositiveCnt + ", False Positive rate: " + falsePositiveRateS);
 		System.out.println("False Negative count: " + falseNegativeCnt + ", False Negative rate: " + falseNegativeRateS);
 	}
