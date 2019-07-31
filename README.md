@@ -8,17 +8,19 @@ Our related research is the following.
 
 We provide the DLL List for each malicious tool.
 
-https://github.com/sisoc-tokyo/mimikatz_detection/tree/master/DLLLists
+https://github.com/sisoc-tokyo/attackToolDetection_Sysmon/tree/master/CommonDLLlist
 
 We provide the following tools.
 - A tool to create Common DLL List from exported event logs and detect processes that matches the Common DLL List (Java)<br/>
-- A tool to detect malicious tools China Chopper, Mimikatz, PowerShell Empire and HUC Packet Transmitter using the Common DLL Lists (Java)<br/>
+https://github.com/sisoc-tokyo/attackToolDetection_Sysmon/blob/master/tools/sysmon_detect/src/logparse/SysmonParser.java
 
-https://github.com/sisoc-tokyo/mimikatz_detection/tree/master/javaTool
+- A tool to detect malicious tools China Chopper, Mimikatz, PowerShell Empire and HUC Packet Transmitter using the Common DLL Lists (Java)<br/>
+https://github.com/sisoc-tokyo/attackToolDetection_Sysmon/blob/master/tools/sysmon_detect/src/logparse/SysmonDetecter.java
+
 
 - A tool to detect processes that matches Common DLL List from Elasticsearch results (Python 3)
 
-https://github.com/sisoc-tokyo/mimikatz_detection/tree/master/pythonTool
+https://github.com/sisoc-tokyo/attackToolDetection_Sysmon/blob/master/tools/realtime-detection/
 
 Before using our tools, you should procees the following steps.
 
