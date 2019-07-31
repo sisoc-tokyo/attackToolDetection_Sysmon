@@ -38,6 +38,7 @@ public class SysmonDetecter {
 	private int totalProcessCnt=0;
 	private int processCntMimi=0;
 	private int detectedProcessCntMimi=0;
+	private int dllCnt=0;
 	private void readCSV(String filename) {
 
 		try {
@@ -107,11 +108,11 @@ public class SysmonDetecter {
 			filewriter = new FileWriter(file);
 			bw = new BufferedWriter(filewriter);
 			pw = new PrintWriter(bw);
-
 			for (Iterator it = map.entrySet().iterator(); it.hasNext();) {
 				Map.Entry<Integer, HashSet> entry = (Map.Entry<Integer, HashSet>) it.next();
 				Object processId = entry.getKey();
 				HashSet<EventLogData> evS = (HashSet<EventLogData>) entry.getValue();
+				dllCnt+=evS.size();
 				//HashSet<String> imageLoadedList = new HashSet<String>();
 				TreeSet<String> imageLoadedList = new TreeSet<String>(String.CASE_INSENSITIVE_ORDER);
 				for (EventLogData ev: evS) {
@@ -270,6 +271,8 @@ public class SysmonDetecter {
 		System.out.println("True Negative count: " + (totalProcessCnt-this.detectedProcessCntMimi-falseNegativeCnt) + ", True Negative rate: " + trueNegativeRateS);
 		System.out.println("False Positive count: " + falsePositiveCnt + ", False Positive rate: " + falsePositiveRateS);
 		System.out.println("False Negative count: " + falseNegativeCnt + ", False Negative rate: " + falseNegativeRateS);
+		double average=dllCnt/totalProcessCnt;
+		System.out.println("average of DLls: "+average);
 	}
 
 	private void readCommonDLLList() {
