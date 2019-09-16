@@ -19,10 +19,10 @@ public class SysmonDetecter_ML {
 	/**
 	 * Specify file name of mimikatz
 	 */
-	// private static final String ATTACK_MODULE_NAME = "powershell.exe";
+	 private static final String ATTACK_MODULE_NAME = "powershell.exe";
 	// private static final String ATTACK_MODULE_NAME = "HTran.exe";
-	private static final String ATTACK_MODULE_NAME = "mimikatz.exe";
-	// private static final String ATTACK_MODULE_NAME = "caidao.exe";
+	//private static final String ATTACK_MODULE_NAME = "mimikatz.exe";
+	//private static final String ATTACK_MODULE_NAME = "caidao.exe";
 	// private static final String ATTACK_MODULE_NAME = "wce.exe";
 	private static final String MIMI_MODULE_NAME = "hogehoge.exe";
 
@@ -190,18 +190,20 @@ public class SysmonDetecter_ML {
 		}
 	}
 
-	private void outputLoadedDLLsByName(Map map, String outputFileName) {
+	private void outputLoadedDLLsByName(Map map, String outputFileName, String inputFileName, PrintWriter pw_dll) {
 		File file = new File(outputFileName);
 		String filename = file.getName();
 		FileWriter filewriter = null;
 		BufferedWriter bw = null;
 		PrintWriter pw = null;
+		int dllCnt=0;
 		try {
 			filewriter = new FileWriter(file, true);
 			bw = new BufferedWriter(filewriter);
 			pw = new PrintWriter(bw);
 
 			for (Iterator it = map.entrySet().iterator(); it.hasNext();) {
+				dllCnt=0;
 				Map.Entry<Integer, LinkedHashSet> entry = (Map.Entry<Integer, LinkedHashSet>) it.next();
 				Object processId = entry.getKey();
 				LinkedHashSet<EventLogData> evS = (LinkedHashSet<EventLogData>) entry.getValue();
@@ -233,7 +235,8 @@ public class SysmonDetecter_ML {
 						containsMimikatz = true;
 						imageList.add(image);
 						processCntMimi++;
-						break;
+						dllCnt++;
+						//break;
 					}
 				}
 				String label = "normal";
@@ -244,7 +247,7 @@ public class SysmonDetecter_ML {
 				pw.println("," + image);
 
 				if (label.equals("attack")) {
-					System.out.println("Detected. filename:" + filename + ", Process ID:" + processId);
+					//System.out.println("Detected. filename:" + inputFileName + ", Process ID:" + processId);
 					detectedProcessCntMimi++;
 					if (!containsMimikatz) {
 						// mimikatz is not executed
@@ -262,6 +265,9 @@ public class SysmonDetecter_ML {
 						falseNegativeCnt++;
 						// }
 					}
+				}
+				if(containsMimikatz) {
+					pw_dll.println("Dll count of "+inputFileName+": "+dllCnt);
 				}
 			}
 		} catch (IOException e) {
@@ -290,13 +296,22 @@ public class SysmonDetecter_ML {
 	public void outputLoadedDlls(String inputDirname) {
 		File dir = new File(inputDirname);
 		File[] files = dir.listFiles();
+		
+		FileWriter filewriter = null;
+		BufferedWriter bw = null;
+		PrintWriter pw = null;
+		
+		try {
+		filewriter = new FileWriter(this.outputDirName + "/" + "DLLCnt.txt");
+		bw = new BufferedWriter(filewriter);
+		pw = new PrintWriter(bw);
 
 		for (File file : files) {
 			String filename = file.getName();
 			if (filename.endsWith(".csv")) {
 				readCSV(file.getAbsolutePath());
 				if (detectByExeName) {
-					outputLoadedDLLsByName(log, this.outputDirName + "/" + outFileName);
+					outputLoadedDLLsByName(log, this.outputDirName + "/" + outFileName, filename, pw);
 				} else {
 					outputLoadedDLLs(log, this.outputDirName + "/" + outFileName);
 				}
@@ -304,6 +319,16 @@ public class SysmonDetecter_ML {
 				log.clear();
 			} else {
 				continue;
+			}
+		}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			pw.close();
+			try {
+				bw.close();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 
